@@ -15,7 +15,7 @@ def sigmasq_func(eps, delta, sens = 1.):            # Compute the variance for a
     return 2.*np.log(1.25/delta)*sens**2/(eps**2)
 
 def comp_reverse(eps, delta, T):                    # Given the privacy parameter of the composed mechanism, compute the privacy parameter of each sub-mechanism (by either composition or advanced composition)
-    # *to do: Advanced composition can be applied (not required)
+    # TODO: Advanced composition can be applied (not required)
     return eps/T, delta/T
 
 def LR_GD(X, Y, eps, delta, T, C = 1., eta = 0.1):  # Solve the Linear regression with (eps, delta)-differentially private SGD
@@ -26,9 +26,9 @@ def LR_GD(X, Y, eps, delta, T, C = 1., eta = 0.1):  # Solve the Linear regressio
     for i in range(T):
         tmp = np.dot(X,w)-Y
         gradient = 2*np.dot(X.T, tmp)               # Compute the gradient
-        # to do: Clip gradient
-        # to do: Add noise
-        # to do: Gradient decent
+        # TODO: Clip gradient
+        # TODO: Add noise
+        # TODO: Gradient decent
     return w
 
 def LR_FM(X, Y, eps, delta):
@@ -43,7 +43,7 @@ def LR_FM(X, Y, eps, delta):
     noise_2 *= np.sqrt(sigmasq)                     # Compute the noise matrix for X^T*Y
     Phi = np.dot(X.T, X)                            # Phi = X^T * X
     Phi_hat = Phi + noise_1
-    # to do: Phi_hat can be modified approximately 
+    # TODO: Phi_hat can be modified approximately 
 	# (e.g. Add 4*sigma*I to it, where I is the 
 	# identity matrix)
     XY = np.dot(X.T, Y)
