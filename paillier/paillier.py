@@ -41,7 +41,7 @@ def generate_keypair(bits):
     n = p * q
     return PrivateKey(p, q, n), PublicKey(n)
 
-def enc(pub, plain):#(public key, plaintext) #TODO
+def enc(pub, plain):#(public key, plaintext)
     cipher = mpz()
     r = mpz_random(rand, pub.n)
     while (gcd(r, pub.n) != 1):
@@ -49,26 +49,36 @@ def enc(pub, plain):#(public key, plaintext) #TODO
     cipher = powmod(mul(powmod(pub.g, plain, pub.n_sq), powmod(r, pub.n, pub.n_sq)), 1, pub.n_sq)
     return cipher
 
-def dec(priv, pub, cipher): #(private key, public key, cipher) #TODO
+def dec(priv, pub, cipher): #(private key, public key, cipher)
     L = (pow(cipher, priv.l, pub.n_sq) - 1) // pub.n
     plain = (L * priv.m) % pub.n
     return plain
 
-def enc_add(pub, m1, m2): #TODO
-    """Add one encrypted integer to another"""
-    return 
+def enc_add(pub, m1, m2):
+    return ((m1 * m2) % pub.n_sq)
 
-def enc_add_const(pub, m, c): #TODO
-    """Add constant n to an encrypted integer"""
-    return
+def enc_add_const(pub, m, c):
+    return (m * powmod(pub.g, c, pub.n_sq)) % pub.n_sq
 
-def enc_mul_const(pub, m, c): #TODO
-    """Multiplies an encrypted integer by a constant"""
-    return
+def enc_mul_const(pub, m, c):
+    return powmod(m, c, pub.n_sq)
 
 if __name__ == '__main__':
     priv, pub = generate_keypair(1024)
+    print('test basic encryption of 1212122147')
     cipher = enc(pub, mpz(1212122147))
     plain = dec(priv, pub, cipher)
-    print(plain)
+    print('plaintext is', plain)
+    print('test addition of 10010 and 121201212')
+    cipher = enc_add(pub, enc(pub, 10010), enc(pub, 121201212))
+    plain = dec(priv, pub, cipher)
+    print('plaintext is', plain)
+    print('test addition of ciphertext 10010 and plaintext 121201212')
+    cipher = enc_add_const(pub, enc(pub, 10010), 121201212)
+    plain = dec(priv, pub, cipher)
+    print('plaintext is', plain)
+    print('test multiplication of ciphertext 10010 and plaintext 121201212')
+    cipher = enc_mul_const(pub, enc(pub, 10010), 121201212)
+    plain = dec(priv, pub, cipher)
+    print('plaintext is', plain)
 
