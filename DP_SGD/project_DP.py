@@ -18,7 +18,7 @@ def comp_reverse(eps, delta, T):                    # Given the privacy paramete
     # TODO: Advanced composition can be applied (not required)
     return eps/T, delta/T
 
-def LR_GD(X, Y, eps, delta, T, C = 1., eta = 0.1):  # Solve the Linear regression with (eps, delta)-differentially private SGD
+def LR_GD(X, Y, eps, delta, T, C = 1.001, eta = 0.00001):  # Solve the Linear regression with (eps, delta)-differentially private SGD
     N, d = X.shape                                  # Get the dimension of X, here d = 2
     w = np.zeros((d,1))
     eps_u, delta_u = comp_reverse(eps, delta, T)    # Compute the privacy parameter of each update, (eps_u, delta_u), given (eps, delta, T)
@@ -27,8 +27,15 @@ def LR_GD(X, Y, eps, delta, T, C = 1., eta = 0.1):  # Solve the Linear regressio
         tmp = np.dot(X,w)-Y
         gradient = 2*np.dot(X.T, tmp)               # Compute the gradient
         # TODO: Clip gradient
+        gradient_clip = gradient
+        for k in range(d):
+            demoninator = abs(gradient_clip[k][0]) / C
+            if demoninator > 1:
+                gradient_clip[k][0] = gradient_clip[k][0] / demoninator
         # TODO: Add noise
+        gradient_noise = (np.sum(gradient_clip) + np.random.normal(0, C * C * sigmasq)) / N
         # TODO: Gradient decent
+        w  = w - eta * gradient_noise
     return w
 
 def LR_FM(X, Y, eps, delta):
