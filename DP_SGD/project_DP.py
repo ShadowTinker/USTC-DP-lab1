@@ -16,9 +16,11 @@ def sigmasq_func(eps, delta, sens = 1.):            # Compute the variance for a
 
 def comp_reverse(eps, delta, T):                    # Given the privacy parameter of the composed mechanism, compute the privacy parameter of each sub-mechanism (by either composition or advanced composition)
     # TODO: Advanced composition can be applied (not required)
-    return eps/T, delta/T
+    new_eps = (2 * T * np.log(1 / delta)) ** 0.5 + T * eps * (np.exp(eps) - 1)
+    new_delata = (T + 1) * delta
+    return new_eps, new_delata
 
-def LR_GD(X, Y, eps, delta, T, C = 1.001, eta = 0.00001):  # Solve the Linear regression with (eps, delta)-differentially private SGD
+def LR_GD(X, Y, eps, delta, T, C = 1., eta = 0.00001):  # Solve the Linear regression with (eps, delta)-differentially private SGD
     N, d = X.shape                                  # Get the dimension of X, here d = 2
     w = np.zeros((d,1))
     eps_u, delta_u = comp_reverse(eps, delta, T)    # Compute the privacy parameter of each update, (eps_u, delta_u), given (eps, delta, T)
@@ -53,6 +55,7 @@ def LR_FM(X, Y, eps, delta):
     # TODO: Phi_hat can be modified approximately 
 	# (e.g. Add 4*sigma*I to it, where I is the 
 	# identity matrix)
+    Phi_hat += 5 * (sigmasq ** 0.5) * np.eye(Phi_hat.shape[0])
     XY = np.dot(X.T, Y)
     XY_hat = XY + noise_2
     tmp = np.linalg.inv(Phi_hat)
